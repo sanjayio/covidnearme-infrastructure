@@ -1,0 +1,6 @@
+# ignore keys
+keys/*.json
+
+# dist directory
+dist/
+
