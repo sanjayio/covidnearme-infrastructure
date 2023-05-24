@@ -21,12 +21,12 @@ data "archive_file" "source" {
     output_path = "./dist/function.zip"
 }
 
-resource "random_id" "bucket_prefix" {
+resource "random_id" "suffix" {
   byte_length = 8
 }
 
 resource "google_storage_bucket" "covidnearmebucket" {
-  name          = "${random_id.bucket_prefix.hex}-covidnearme-bucket"
+  name          = "covidnearme-bucket-${random_id.suffix.hex}"
   location      = "australia-southeast1"
   uniform_bucket_level_access = true
 }
@@ -43,11 +43,11 @@ resource "google_storage_bucket_object" "covidnearmefunctionarchive" {
 }
 
 resource "google_pubsub_topic" "covidnearmetopic" {
-  name = "covidnearme-pubsub-topic-${random_id.bucket_prefix.hex}"
+  name = "covidnearme-pubsub-topic-${random_id.suffix.hex}"
 }
 
 resource "google_cloudfunctions2_function" "covidnearmefunction" {
-  name        = "covidnearme-fetch-function-${random_id.bucket_prefix.hex}"
+  name        = "covidnearme-fetch-function-${random_id.suffix.hex}"
   description = "Covidnearme fetch function"
   location    = "australia-southeast1"
 
@@ -87,9 +87,9 @@ resource "google_cloudfunctions2_function" "covidnearmefunction" {
 }
 
 resource "google_cloud_scheduler_job" "covidnearmeschedule" {
-  name        = "covidnearme-schedule"
+  name        = "covidnearme-schedule-${random_id.suffix.hex}"
   description = "Schedule for covidnearme fetch"
-  schedule    = "0 10 * * FRI"
+  schedule    = "0 23 * * *"
 
   pubsub_target {
     # topic.id is the topic's full resource name.
